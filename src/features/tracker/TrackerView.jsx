@@ -27,7 +27,10 @@ import {
   FileText,
   Sparkles,
   Zap,
+  Camera,
+  Download,
 } from 'lucide-react';
+import { Modal } from '../../components/common/Modal';
 
 const SUPPORTED_PLATFORMS = [
   { name: 'YouTube', icon: Video, color: 'text-red-400', desc: 'Tutorials & conference talks' },
@@ -42,6 +45,7 @@ export const TrackerView = () => {
   const queryClient = useQueryClient();
 
   const [simulatingPlatform, setSimulatingPlatform] = useState(null);
+  const [isExtensionModalOpen, setIsExtensionModalOpen] = useState(false);
 
   // Unit V: React Query for fetching resources
   const { data: resources = [], isLoading } = useQuery({
@@ -123,13 +127,51 @@ export const TrackerView = () => {
             MDN specifications, LeetCode challenges, and tech articles into one unified intelligence feed.
           </p>
         </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="emerald"
+            icon={Camera}
+            onClick={() => setIsExtensionModalOpen(true)}
+            className="self-start md:self-auto text-xs"
+          >
+            Chrome Screen Extension
+          </Button>
+          <Button
+            variant="primary"
+            icon={PlusCircle}
+            onClick={() => setCaptureModalOpen(true)}
+            className="self-start md:self-auto text-xs"
+          >
+            Capture Custom URL
+          </Button>
+        </div>
+      </div>
+
+      {/* Chrome Screen Extension Banner */}
+      <div className="glass-panel p-5 rounded-2xl border border-indigo-500/30 bg-gradient-to-r from-indigo-950/40 via-purple-950/20 to-slate-900/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-indigo-600/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 shrink-0">
+            <Camera className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-white">RecallOS Chrome Extension (Screen & Tab Capture)</h3>
+              <Badge variant="success">Manifest V3</Badge>
+            </div>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Instantly capture visible screens, YouTube lecture frames, and code solutions directly into your Knowledge Vault.
+            </p>
+          </div>
+        </div>
+
         <Button
-          variant="primary"
-          icon={PlusCircle}
-          onClick={() => setCaptureModalOpen(true)}
-          className="self-start md:self-auto"
+          variant="secondary"
+          size="sm"
+          icon={Download}
+          onClick={() => setIsExtensionModalOpen(true)}
+          className="text-xs shrink-0 border-indigo-500/40 text-indigo-300 hover:text-white"
         >
-          Capture Custom URL
+          View Extension Setup (15s)
         </Button>
       </div>
 
@@ -242,7 +284,55 @@ export const TrackerView = () => {
             ))}
           </div>
         )}
-      </div>
+      {/* Extension Setup Modal */}
+      <Modal
+        isOpen={isExtensionModalOpen}
+        onClose={() => setIsExtensionModalOpen(false)}
+        title="RecallOS Screen & Tab Capture Extension"
+        subtitle="Load the official Chrome Extension to capture educational screens & tabs directly"
+        maxWidth="max-w-xl"
+      >
+        <div className="space-y-4">
+          <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
+              Extension Directory on your Machine:
+            </h4>
+            <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800 font-mono text-xs text-indigo-300 break-all select-all">
+              C:\Users\ravur\.gemini\antigravity\scratch\recallos\extension
+            </div>
+            <p className="text-[11px] text-slate-400">
+              Contains <code className="text-slate-200">manifest.json</code>, <code className="text-slate-200">background.js</code>, and <code className="text-slate-200">popup.html</code>.
+            </p>
+          </div>
+
+          <div className="space-y-2.5">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-300">
+              How to Install in Chrome (3 Steps):
+            </h4>
+            <ol className="space-y-2 text-xs text-slate-300 list-decimal list-inside">
+              <li className="p-2 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                Open Google Chrome and go to <code className="text-emerald-400 font-mono">chrome://extensions/</code>
+              </li>
+              <li className="p-2 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                Enable <strong className="text-white">"Developer mode"</strong> in the top-right corner.
+              </li>
+              <li className="p-2 rounded-lg bg-slate-900/60 border border-slate-800/80">
+                Click <strong className="text-white">"Load unpacked"</strong> and select the <code className="text-indigo-400 font-mono">extension</code> folder above!
+              </li>
+            </ol>
+          </div>
+
+          <div className="p-3 rounded-xl bg-indigo-950/30 border border-indigo-500/30 text-xs text-indigo-300">
+            📸 Once installed, click the RecallOS extension icon on any YouTube video, LeetCode problem, or article to capture the screen snapshot and save directly to your vault!
+          </div>
+
+          <div className="pt-2 flex justify-end">
+            <Button variant="primary" size="sm" onClick={() => setIsExtensionModalOpen(false)}>
+              Got It!
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

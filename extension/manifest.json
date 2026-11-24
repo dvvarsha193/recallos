@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "RecallOS Screen & Learning Tracker",
+  "version": "1.0.0",
+  "description": "Capture screen snapshots, lecture videos, and learning materials directly into your RecallOS Knowledge Vault.",
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "storage",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Capture Screen with RecallOS"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
