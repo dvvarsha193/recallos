@@ -1,0 +1,71 @@
+-- =========================================================================
+-- RecallOS: Supabase Database Schema (PostgreSQL)
+-- =========================================================================
+
+-- 1. Create Resources Table
+CREATE TABLE IF NOT EXISTS public.resources (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    url TEXT NOT NULL,
+    platform TEXT NOT NULL,
+    domain TEXT NOT NULL,
+    tags TEXT[] DEFAULT '{}',
+    time_spent_mins INTEGER DEFAULT 30,
+    summary TEXT,
+    extracted_concepts TEXT[] DEFAULT '{}',
+    mastery_score INTEGER DEFAULT 60,
+    status TEXT DEFAULT 'Reviewing',
+    captured_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    review_due_date TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + INTERVAL '3 days'),
+    review_interval_days INTEGER DEFAULT 3,
+    notes TEXT
+);
+
+-- 2. Create Concepts Table
+CREATE TABLE IF NOT EXISTS public.concepts (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    domain TEXT NOT NULL,
+    category TEXT,
+    mastery_score INTEGER DEFAULT 50,
+    importance TEXT DEFAULT 'High',
+    description TEXT,
+    resource_count INTEGER DEFAULT 1,
+    last_tested DATE DEFAULT CURRENT_DATE,
+    color TEXT DEFAULT '#6366f1'
+);
+
+-- 3. Create Quiz Questions Table
+CREATE TABLE IF NOT EXISTS public.quiz_questions (
+    id TEXT PRIMARY KEY,
+    concept_id TEXT REFERENCES public.concepts(id) ON DELETE CASCADE,
+    topic TEXT NOT NULL,
+    question TEXT NOT NULL,
+    options JSONB NOT NULL,
+    correct_answer_index INTEGER NOT NULL,
+    explanation TEXT,
+    difficulty TEXT DEFAULT 'Intermediate'
+);
+
+-- 4. Create User Learning Telemetry Table
+CREATE TABLE IF NOT EXISTS public.user_stats (
+    user_id TEXT PRIMARY KEY DEFAULT 'current_student',
+    streak_days INTEGER DEFAULT 14,
+    total_minutes_learned INTEGER DEFAULT 385,
+    today_minutes INTEGER DEFAULT 45,
+    concepts_mastered INTEGER DEFAULT 18,
+    active_gaps INTEGER DEFAULT 3,
+    level TEXT DEFAULT 'Advanced Scholar',
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 5. Enable Row Level Security (RLS) & Public Access Policies for Demo
+ALTER TABLE public.resources ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.concepts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.quiz_questions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_stats ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public Read/Write Resources" ON public.resources FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public Read/Write Concepts" ON public.concepts FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public Read/Write Quizzes" ON public.quiz_questions FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Public Read/Write UserStats" ON public.user_stats FOR ALL USING (true) WITH CHECK (true);
