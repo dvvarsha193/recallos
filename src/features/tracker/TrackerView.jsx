@@ -284,6 +284,8 @@ export const TrackerView = () => {
             ))}
           </div>
         )}
+      </div>
+
       {/* Extension Setup Modal */}
       <Modal
         isOpen={isExtensionModalOpen}
